@@ -6,7 +6,7 @@ contract KeyHolder is ERC725 {
     using ByteArr for bytes32[];
     using ByteArr for bytes;
 
-    uint256 nonce;
+    uint256 executionNonce;
 
     mapping (bytes32 => Key) keys;
     mapping (uint256 => bytes32[]) keysByPurpose;
@@ -49,11 +49,17 @@ contract KeyHolder is ERC725 {
         return true;
     }
     function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId) {
-        executions[nonce].to = _to;
-        executions[nonce].value = _value;
-        executions[nonce].data = _data;
-        nonce++;
-        return nonce-1;
+        require(!executions[executionNonce].executed);
+        executions[executionNonce].to = _to;
+        executions[executionNonce].value = _value;
+        executions[executionNonce].data = _data;
+
+        if (hasRight(keccak256(msg.sender),1) || hasRight(keccak256(msg.sender),2)) {
+            approve(executionNonce, true);
+        }
+
+        executionNonce++;
+        return executionNonce-1;
     }
 
     // 	"a820f50a": "addKey(bytes32,uint256[],uint256)",
@@ -71,7 +77,7 @@ contract KeyHolder is ERC725 {
                 require(hasRight(keccak256(msg.sender),2));
             }
         } else {
-            require(hasRight(keccak256(msg.sender),1) || hasRight(keccak256(msg.sender),2));
+            hasRight(keccak256(msg.sender),2);
         }
 
         Approved(_id, _approve);
