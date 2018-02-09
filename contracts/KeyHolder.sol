@@ -13,7 +13,7 @@ contract KeyHolder is ERC725 {
     mapping (uint256 => Execution) executions;
 
     function KeyHolder() {
-        bytes32 _key = bytes32(msg.sender);
+        bytes32 _key = keccak256(msg.sender);
         keys[_key].key = _key;
         keys[_key].purposes = [1];
         keys[_key].keyType = 1;
@@ -66,12 +66,12 @@ contract KeyHolder is ERC725 {
         bytes4 fHash = executions[_id].data.getFuncHash();
         if (to == address(this)) {
             if (fHash == 0xa820f50a || fHash == 0x862642f5) {
-                require(hasRight(bytes32(msg.sender),1));
+                require(hasRight(keccak256(msg.sender),1));
             } else {
-                require(hasRight(bytes32(msg.sender),2));
+                require(hasRight(keccak256(msg.sender),2));
             }
         } else {
-            require(hasRight(bytes32(msg.sender),1) || hasRight(bytes32(msg.sender),2));
+            require(hasRight(keccak256(msg.sender),1) || hasRight(keccak256(msg.sender),2));
         }
 
         Approved(_id, _approve);
