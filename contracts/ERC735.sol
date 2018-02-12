@@ -6,7 +6,7 @@ contract ERC735 {
     event ClaimChanged(uint256 indexed claimId, uint256 indexed claimType, address indexed issuer, bytes signature, bytes32 key, bytes data, string uri);
     event ClaimRemoved(uint256 indexed claimId, uint256 indexed claimType, address indexed issuer, bytes signature, bytes32 key, bytes data, string uri);
     // event ClaimRequested(uint256 indexed claimRequestId, uint256 indexed claimType, uint256 scheme, address indexed issuer, bytes signature, bytes data, string uri);    
-    event ClaimRequested(bytes data); 
+    event ClaimRequested(bytes data);
     
     // Stated ERC735 implementation
     //    struct Claim {

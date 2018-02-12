@@ -15,12 +15,9 @@ contract KeyHolder is ERC725 {
     function KeyHolder() public {
         bytes32 _key = keccak256(msg.sender);
         keys[_key].key = _key;
-        keys[_key].purposes = [1,2,3]; // TODO: Remove 2,3
+        keys[_key].purposes = [1,2,3];
         keys[_key].keyType = 1;
         keysByPurpose[1].push(_key);
-        // TODO: Remove
-        keysByPurpose[2].push(_key);
-        keysByPurpose[3].push(_key);
     }
 
     function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) internal returns (bool success) {
