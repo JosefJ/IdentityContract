@@ -12,12 +12,15 @@ contract KeyHolder is ERC725 {
     mapping (uint256 => bytes32[]) keysByPurpose;
     mapping (uint256 => Execution) executions;
 
-    function KeyHolder() {
+    function KeyHolder() public {
         bytes32 _key = keccak256(msg.sender);
         keys[_key].key = _key;
-        keys[_key].purposes = [1];
+        keys[_key].purposes = [1,2,3]; // TODO: Remove 2,3
         keys[_key].keyType = 1;
         keysByPurpose[1].push(_key);
+        // TODO: Remove
+        keysByPurpose[2].push(_key);
+        keysByPurpose[3].push(_key);
     }
 
     function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) internal returns (bool success) {
@@ -34,34 +37,7 @@ contract KeyHolder is ERC725 {
         KeyAdded(_key, _purposes, _type);
         return true;
     }
-
-    function removeKey(bytes32 _key) internal returns (bool success) {
-        require(keys[_key].key == _key);
-        KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
-
-        for (uint i = 0; i < keys[_key].purposes.length; i++) {
-            var (index, isThere) = keysByPurpose[keys[_key].purposes[i]].indexOf(_key);
-            keysByPurpose[keys[_key].purposes[i]].removeByIndex(index);
-        }
-
-        delete keys[_key];
-
-        return true;
-    }
-    function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId) {
-        require(!executions[executionNonce].executed);
-        executions[executionNonce].to = _to;
-        executions[executionNonce].value = _value;
-        executions[executionNonce].data = _data;
-
-        if (hasRight(keccak256(msg.sender),1) || hasRight(keccak256(msg.sender),2)) {
-            approve(executionNonce, true);
-        }
-
-        executionNonce++;
-        return executionNonce-1;
-    }
-
+    
     // 	"a820f50a": "addKey(bytes32,uint256[],uint256)",
     // 	"747442d3": "approve(uint256,bool)",
     // 	"b61d27f6": "execute(address,uint256,bytes)",
@@ -97,6 +73,37 @@ contract KeyHolder is ERC725 {
         }
         return true;
     }
+    
+    function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId) {
+        require(!executions[executionNonce].executed);
+        executions[executionNonce].to = _to;
+        executions[executionNonce].value = _value;
+        executions[executionNonce].data = _data;
+
+        if (hasRight(keccak256(msg.sender),1) || hasRight(keccak256(msg.sender),2)) {
+            approve(executionNonce, true);
+        }
+        
+        ExecutionRequested(executionNonce, _to, _value, _data);
+
+        executionNonce++;
+        return executionNonce-1;
+    }
+    
+    function removeKey(bytes32 _key) internal returns (bool success) {
+        require(keys[_key].key == _key);
+        KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
+
+        for (uint i = 0; i < keys[_key].purposes.length; i++) {
+            var (index, isThere) = keysByPurpose[keys[_key].purposes[i]].indexOf(_key);
+            delete isThere; 
+            keysByPurpose[keys[_key].purposes[i]].removeByIndex(index);
+        }
+
+        delete keys[_key];
+
+        return true;
+    }
 
     // WARN: Deviates from ERC725
     function getKey(bytes32 _key) public view returns(uint256[] purposes, uint256 keyType, bytes32 key){
@@ -113,8 +120,9 @@ contract KeyHolder is ERC725 {
         return keysByPurpose[_purpose];
     }
 
-    function hasRight(bytes32 _key, uint256 _purpose) view internal returns(bool result) {
+    function hasRight(bytes32 _key, uint256 _purpose) view public returns(bool result) {
         var (index,isThere) = keysByPurpose[_purpose].indexOf(_key);
+        delete index;
         return isThere;
     }
 }
