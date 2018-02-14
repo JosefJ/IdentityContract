@@ -3,8 +3,9 @@ import './ByteArr.sol';
 import './ERC725.sol';
 
 contract KeyHolder is ERC725 {
-    using ByteArr for bytes32[];
     using ByteArr for bytes;
+    using ByteArr for bytes32[];
+    using ByteArr for uint256[];
 
     uint256 executionNonce;
 
@@ -15,9 +16,10 @@ contract KeyHolder is ERC725 {
     function KeyHolder() public {
         bytes32 _key = keccak256(msg.sender);
         keys[_key].key = _key;
-        keys[_key].purposes = [1,2,3];
+        keys[_key].purposes = [1];
         keys[_key].keyType = 1;
         keysByPurpose[1].push(_key);
+        KeyAdded(_key, keys[_key].purposes, 1);
     }
 
     function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) internal returns (bool success) {
@@ -45,12 +47,12 @@ contract KeyHolder is ERC725 {
         bytes4 fHash = executions[_id].data.getFuncHash();
         if (to == address(this)) {
             if (fHash == 0xa820f50a || fHash == 0x862642f5) {
-                require(hasRight(keccak256(msg.sender),1));
+                require(keyHasPurpose(keccak256(msg.sender),1));
             } else {
-                require(hasRight(keccak256(msg.sender),2));
+                require(keyHasPurpose(keccak256(msg.sender),2));
             }
         } else {
-            hasRight(keccak256(msg.sender),2);
+            keyHasPurpose(keccak256(msg.sender),2);
         }
 
         Approved(_id, _approve);
@@ -77,7 +79,7 @@ contract KeyHolder is ERC725 {
         executions[executionNonce].value = _value;
         executions[executionNonce].data = _data;
 
-        if (hasRight(keccak256(msg.sender),1) || hasRight(keccak256(msg.sender),2)) {
+        if (keyHasPurpose(keccak256(msg.sender),1) || keyHasPurpose(keccak256(msg.sender),2)) {
             approve(executionNonce, true);
         }
         
@@ -102,24 +104,17 @@ contract KeyHolder is ERC725 {
         return true;
     }
 
-    // WARN: Deviates from ERC725
     function getKey(bytes32 _key) public view returns(uint256[] purposes, uint256 keyType, bytes32 key){
-        require(keys[_key].key == _key);
         return (keys[_key].purposes, keys[_key].keyType, keys[_key].key);
-    }
-
-    function getKeyPurposes(bytes32 _key) public view returns(uint256[] purpose) {
-        require(keys[_key].key == _key);
-        return keys[_key].purposes;
     }
 
     function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] _keys) {
         return keysByPurpose[_purpose];
     }
 
-    function hasRight(bytes32 _key, uint256 _purpose) view public returns(bool result) {
-        var (index,isThere) = keysByPurpose[_purpose].indexOf(_key);
-        delete index;
+    function keyHasPurpose(bytes32 _key, uint256 _purpose) public view returns(bool result) {
+        var (index,isThere) = keys[_key].purposes.indexOf(_purpose);
         return isThere;
     }
+
 }

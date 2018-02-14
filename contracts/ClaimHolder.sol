@@ -18,7 +18,7 @@ contract ClaimHolder is KeyHolder, ERC735 {
         // require(_signature == keccak256(address(this),_claimType,_data));
         // sending unhashed public key or hashed key for keys longer than 32 bytes;
         KeyHolder issuer = KeyHolder(issuer);
-        require(issuer.hasRight(keccak256(_claimerKey),3));
+        require(issuer.keyHasPurpose(keccak256(_claimerKey),3));
         
         claims[claimNonce].claimType = _claimType;
         claims[claimNonce].issuer = _issuer;
@@ -38,7 +38,6 @@ contract ClaimHolder is KeyHolder, ERC735 {
         require(_claimId <= claimNonce);
         if (claims[_claimId].claimType != _claimType) {
             var (index, isThere) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
-            delete isThere; 
             claimsByType[claims[_claimId].claimType].removeByIndex(index);
             claimsByType[_claimType].push(_claimId);
         } 
@@ -61,7 +60,6 @@ contract ClaimHolder is KeyHolder, ERC735 {
         require(msg.sender == claims[_claimId].issuer || msg.sender == address(this));
 
         var (index, isThere) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
-        delete isThere;
         claimsByType[claims[_claimId].claimType].removeByIndex(index);
 
         ClaimRemoved(_claimId, claims[_claimId].claimType, claims[_claimId].issuer, claims[_claimId].signature, claims[_claimId].key, claims[_claimId].data, claims[_claimId].uri);
