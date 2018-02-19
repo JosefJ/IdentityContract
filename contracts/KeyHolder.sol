@@ -94,8 +94,8 @@ contract KeyHolder is ERC725 {
         KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
 
         for (uint i = 0; i < keys[_key].purposes.length; i++) {
-            var (index, isThere) = keysByPurpose[keys[_key].purposes[i]].indexOf(_key);
-            delete isThere; 
+            uint index;
+            (index,) = keysByPurpose[keys[_key].purposes[i]].indexOf(_key);
             keysByPurpose[keys[_key].purposes[i]].removeByIndex(index);
         }
 
@@ -113,7 +113,8 @@ contract KeyHolder is ERC725 {
     }
 
     function keyHasPurpose(bytes32 _key, uint256 _purpose) public view returns(bool result) {
-        var (index,isThere) = keys[_key].purposes.indexOf(_purpose);
+        bool isThere;
+        (,isThere) = keys[_key].purposes.indexOf(_purpose);
         return isThere;
     }
 

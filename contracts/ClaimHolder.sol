@@ -37,7 +37,8 @@ contract ClaimHolder is KeyHolder, ERC735 {
     function changeClaim(uint256 _claimId, uint256 _claimType, address _issuer, bytes _signature, bytes32 _claimerKey, bytes _data, string _uri) internal returns (bool success) {
         require(_claimId <= claimNonce);
         if (claims[_claimId].claimType != _claimType) {
-            var (index, isThere) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
+            uint index;
+            (index,) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
             claimsByType[claims[_claimId].claimType].removeByIndex(index);
             claimsByType[_claimType].push(_claimId);
         } 
@@ -58,8 +59,8 @@ contract ClaimHolder is KeyHolder, ERC735 {
     
     function removeClaim(uint256 _claimId) internal returns (bool success) {
         require(msg.sender == claims[_claimId].issuer || msg.sender == address(this));
-
-        var (index, isThere) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
+        uint index;
+        (index, ) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
         claimsByType[claims[_claimId].claimType].removeByIndex(index);
 
         ClaimRemoved(_claimId, claims[_claimId].claimType, claims[_claimId].issuer, claims[_claimId].signature, claims[_claimId].key, claims[_claimId].data, claims[_claimId].uri);
