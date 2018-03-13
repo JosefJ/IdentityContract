@@ -36,11 +36,11 @@ contract KeyHolder is ERC725 {
         KeyAdded(_key, _purposes, _type);
         return true;
     }
-    
-    // 	"a820f50a": "addKey(bytes32,uint256[],uint256)",
-    // 	"747442d3": "approve(uint256,bool)",
-    // 	"b61d27f6": "execute(address,uint256,bytes)",
-    // 	"862642f5": "removeKey(bytes32)"
+
+    //  "a820f50a": "addKey(bytes32,uint256[],uint256)",
+    //  "747442d3": "approve(uint256,bool)",
+    //  "b61d27f6": "execute(address,uint256,bytes)",
+    //  "862642f5": "removeKey(bytes32)"
 
     function approve(uint256 _id, bool _approve) public returns (bool success) {
         address to = executions[_id].to;
@@ -72,7 +72,7 @@ contract KeyHolder is ERC725 {
         }
         return true;
     }
-    
+
     function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId) {
         require(!executions[executionNonce].executed);
         executions[executionNonce].to = _to;
@@ -82,13 +82,13 @@ contract KeyHolder is ERC725 {
         if (keyHasPurpose(keccak256(msg.sender),1) || keyHasPurpose(keccak256(msg.sender),2)) {
             approve(executionNonce, true);
         }
-        
+
         ExecutionRequested(executionNonce, _to, _value, _data);
 
         executionNonce++;
         return executionNonce-1;
     }
-    
+
     function removeKey(bytes32 _key) internal returns (bool success) {
         require(keys[_key].key == _key);
         KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
@@ -117,5 +117,4 @@ contract KeyHolder is ERC725 {
         (,isThere) = keys[_key].purposes.indexOf(_purpose);
         return isThere;
     }
-
 }

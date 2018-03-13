@@ -5,21 +5,21 @@ import './ERC735.sol';
 import './KeyHolder.sol';
 
 contract ClaimHolder is KeyHolder, ERC735 {
-    using ByteArr for bytes32; 
+    using ByteArr for bytes32;
     using ByteArr for bytes32[];
     using ByteArr for uint256[];
 
-    uint256 claimNonce; 
+    uint256 claimNonce;
     mapping (uint256 => Claim) claims;
     mapping (uint256 => uint256[]) claimsByType;
 
     function addClaim(uint256 _claimType, address _issuer, bytes _signature, bytes32 _claimerKey, bytes _data, string _uri) internal returns (uint256 claimRequestId) {
-        
+
         // require(_signature == keccak256(address(this),_claimType,_data));
         // sending unhashed public key or hashed key for keys longer than 32 bytes;
         KeyHolder issuer = KeyHolder(issuer);
         require(issuer.keyHasPurpose(keccak256(_claimerKey),3));
-        
+
         claims[claimNonce].claimType = _claimType;
         claims[claimNonce].issuer = _issuer;
         claims[claimNonce].signature = _signature;
@@ -29,7 +29,7 @@ contract ClaimHolder is KeyHolder, ERC735 {
 
         claimsByType[_claimType].push(claimNonce);
         ClaimAdded(claimNonce, _claimType, _issuer, _signature, _claimerKey, _data, _uri);
-        
+
         claimNonce++;
         return claimNonce-1;
     }
@@ -41,22 +41,22 @@ contract ClaimHolder is KeyHolder, ERC735 {
             (index,) = claimsByType[claims[_claimId].claimType].indexOf(_claimId);
             claimsByType[claims[_claimId].claimType].removeByIndex(index);
             claimsByType[_claimType].push(_claimId);
-        } 
-        
-        // TODO: test gas effectivity 
-        delete claims[_claimId]; 
-        
+        }
+
+        // TODO: test gas effectivity
+        delete claims[_claimId];
+
         claims[_claimId].claimType = _claimType;
         claims[_claimId].issuer = _issuer;
         claims[_claimId].signature = _signature;
         claims[_claimId].key = _claimerKey;
         claims[_claimId].data = _data;
         claims[_claimId].uri = _uri;
-        
+
         ClaimChanged(_claimId, _claimType, _issuer, _signature, _claimerKey, _data, _uri);
-        return true;        
+        return true;
     }
-    
+
     function removeClaim(uint256 _claimId) internal returns (bool success) {
         require(msg.sender == claims[_claimId].issuer || msg.sender == address(this));
         uint index;
@@ -81,8 +81,7 @@ contract ClaimHolder is KeyHolder, ERC735 {
         bytes4 fHash = _data.getFuncHash();
         if (fHash == 0xc78322ae) {
             ClaimRequested(_data);
-        } 
-        return super.execute(_to, _value, _data); 
+        }
+        return super.execute(_to, _value, _data);
     }
-    
 }

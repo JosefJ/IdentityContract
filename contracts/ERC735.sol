@@ -1,13 +1,12 @@
 pragma solidity ^0.4.18;
 
 contract ERC735 {
-
     event ClaimAdded(uint256 indexed claimId, uint256 indexed claimType, address indexed issuer, bytes signature, bytes32 key, bytes data, string uri);
     event ClaimChanged(uint256 indexed claimId, uint256 indexed claimType, address indexed issuer, bytes signature, bytes32 key, bytes data, string uri);
     event ClaimRemoved(uint256 indexed claimId, uint256 indexed claimType, address indexed issuer, bytes signature, bytes32 key, bytes data, string uri);
-    // event ClaimRequested(uint256 indexed claimRequestId, uint256 indexed claimType, uint256 scheme, address indexed issuer, bytes signature, bytes data, string uri);    
+    // event ClaimRequested(uint256 indexed claimRequestId, uint256 indexed claimType, uint256 scheme, address indexed issuer, bytes signature, bytes data, string uri);
     event ClaimRequested(bytes data);
-    
+
     // Stated ERC735 implementation
     //    struct Claim {
     //        uint256 claimType;
@@ -36,5 +35,3 @@ contract ERC735 {
     function getClaim(uint256 _claimId) public view returns(uint256 claimType, address issuer, bytes signature, bytes32 claimerKey, bytes data, string uri);
     function getClaimIdsByType(uint256 _claimType) public view returns(uint256[] claimIds);
 }
-
-

@@ -9,7 +9,7 @@ library ByteArr {
         }
         return (0, false);
     }
-    
+
     function indexOf(uint256[] storage self, uint256 item) view internal returns (uint index, bool isThere) {
         for (uint i = 0; i < self.length; i++) {
             if (self[i] == item) {
@@ -27,7 +27,7 @@ library ByteArr {
 
         return self;
     }
-    
+
     function removeByIndex(uint256[] storage self, uint256 index) internal returns (uint256[]) {
         if (index >= self.length) return;
 
