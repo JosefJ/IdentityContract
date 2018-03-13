@@ -1,4 +1,5 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
+
 import './ByteArr.sol';
 import './ERC725.sol';
 
@@ -104,15 +105,15 @@ contract KeyHolder is ERC725 {
         return true;
     }
 
-    function getKey(bytes32 _key) public view returns(uint256[] purposes, uint256 keyType, bytes32 key){
+    function getKey(bytes32 _key) public view returns (uint256[] purposes, uint256 keyType, bytes32 key){
         return (keys[_key].purposes, keys[_key].keyType, keys[_key].key);
     }
 
-    function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] _keys) {
+    function getKeysByPurpose(uint256 _purpose) public view returns (bytes32[] _keys) {
         return keysByPurpose[_purpose];
     }
 
-    function keyHasPurpose(bytes32 _key, uint256 _purpose) public view returns(bool result) {
+    function keyHasPurpose(bytes32 _key, uint256 _purpose) public view returns (bool result) {
         bool isThere;
         (,isThere) = keys[_key].purposes.indexOf(_purpose);
         return isThere;

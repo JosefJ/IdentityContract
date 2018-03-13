@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 library ByteArr {
     function indexOf(bytes32[] storage self, bytes32 item) view internal returns (uint index, bool isThere) {

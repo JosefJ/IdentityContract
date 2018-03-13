@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 import './ByteArr.sol';
 import './ERC735.sol';
@@ -14,7 +14,6 @@ contract ClaimHolder is KeyHolder, ERC735 {
     mapping (uint256 => uint256[]) claimsByType;
 
     function addClaim(uint256 _claimType, address _issuer, bytes _signature, bytes32 _claimerKey, bytes _data, string _uri) internal returns (uint256 claimRequestId) {
-
         // require(_signature == keccak256(address(this),_claimType,_data));
         // sending unhashed public key or hashed key for keys longer than 32 bytes;
         KeyHolder issuer = KeyHolder(issuer);

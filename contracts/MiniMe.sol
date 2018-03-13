@@ -1,4 +1,5 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.19;
+
 import './KeyHolder.sol';
 import './ClaimHolder.sol';
 
