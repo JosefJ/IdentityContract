@@ -3,7 +3,7 @@ import './KeyHolder.sol';
 import './ClaimHolder.sol';
 
 contract MiniMe is KeyHolder, ClaimHolder{
-    function MiniMe(){
+    function MiniMe() public {
         // TODO
     }
 }
