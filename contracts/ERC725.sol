@@ -35,7 +35,7 @@ contract ERC725 {
     function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId);
     function removeKey(bytes32 _key) internal returns (bool success);
     // Getters
-    function getKey(bytes32 _key) public view returns(uint256[] purposes, uint256 keyType, bytes32 key);
-    function getKeyPurposes(bytes32 _key) public view returns(uint256[] purpose);
-    function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] keys);
+    function getKey(bytes32 _key) public view returns (uint256[] purposes, uint256 keyType, bytes32 key);
+    function getKeyPurposes(bytes32 _key) public view returns (uint256[] purposes);
+    function getKeysByPurpose(uint256 _purpose) public view returns (bytes32[] keys);
 }

@@ -48,12 +48,12 @@ contract KeyHolder is ERC725 {
         bytes4 fHash = executions[_id].data.getFuncHash();
         if (to == address(this)) {
             if (fHash == 0xa820f50a || fHash == 0x862642f5) {
-                require(keyHasPurpose(keccak256(msg.sender),1));
+                require(keyHasPurpose(keccak256(msg.sender), 1));
             } else {
-                require(keyHasPurpose(keccak256(msg.sender),2));
+                require(keyHasPurpose(keccak256(msg.sender), 2));
             }
         } else {
-            keyHasPurpose(keccak256(msg.sender),2);
+            keyHasPurpose(keccak256(msg.sender), 2);
         }
 
         Approved(_id, _approve);
@@ -107,6 +107,10 @@ contract KeyHolder is ERC725 {
 
     function getKey(bytes32 _key) public view returns (uint256[] purposes, uint256 keyType, bytes32 key){
         return (keys[_key].purposes, keys[_key].keyType, keys[_key].key);
+    }
+
+    function getKeyPurposes(bytes32 _key) public view returns (uint256[] purposes) {
+        return keys[_key].purposes;
     }
 
     function getKeysByPurpose(uint256 _purpose) public view returns (bytes32[] _keys) {
