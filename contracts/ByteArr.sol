@@ -37,7 +37,7 @@ library ByteArr {
         return self;
     }
 
-    function getFuncHash(bytes _data) pure public returns (bytes4) {
+    function getFuncHash(bytes _data) pure internal returns (bytes4) {
         bytes4 output;
         for (uint i = 0; i < 4; i++) {
             output |= bytes4(_data[i] & 0xFF) >> (i * 8);
