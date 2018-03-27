@@ -53,7 +53,7 @@ contract KeyHolder is ERC725 {
                 require(keyHasPurpose(keccak256(msg.sender), 2));
             }
         } else {
-            keyHasPurpose(keccak256(msg.sender), 2);
+            require(keyHasPurpose(keccak256(msg.sender), 2));
         }
 
         Approved(_id, _approve);
