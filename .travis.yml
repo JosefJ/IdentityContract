@@ -1,0 +1,29 @@
+dist: trusty
+sudo: required
+group: beta
+language: node_js
+node_js:
+  - "8"
+install:
+  - npm install -g truffle
+cache:
+  directories:
+    - node_modules
+env:
+  -
+  - SOLIDITY_COVERAGE=true
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: SOLIDITY_COVERAGE=true
+before_script:
+  - truffle version
+script:
+  - truffle test
+notifications:
+  slack:
+    rooms:
+      - secure: "h+HKH/4iZRTvMm0wc24eTzqcl9uZEYHHCxT0dK5pgZlgkjtkrUIMCQ640CWA47tCdYIKefJ31pum/86ZwcrnWD1b15kki+MtX78iN33GYj0tQW/tynonm95eoKGw6TKoC/899OMiqW9PNS41grhETWb01aVSXax8ECVwCsHAzCWkZeXu6jsdlrpvLTT3F1V75BLcNTzJDrtJLFY2jjmdObU9HbTS8z89PCeSGRNM4QI+PgfI5Fr5dZw/Iijx5c26ardcEFwdnLR5p20q3EYNhK1TOP9kI5nhut52EQTGr6C6pnsAcsvGfushlEKmQnDtcbKALhqv72HTQR+fvpDVsiT4TOlyO8v43i2vVV4NGLCNMX6N0OiyrfZtgeSiCgJMEq+YiSmeR+kYPimKozU460bGuSv5M86zs6hFASMhRLlXx+NWll1z/APwQSTOa3APnJ6LYTepD0hav/aVbx9aB2fv9IwYuI3nfjKj+A0M0WbIjqQiDmOPB0Q4psyHNlQDHyiOWR5k0z2ON8StnytPUgTreg/WbyLVQ0P9d/ItEnDkbwIByGytvP+OjwLQnZZWNr7azcTJFFREuI9WeuE2UGICR2oJkGh6SCJz2I9qB4n9rQyGvbrJxR8K5d5gc8TcSU7eV9zxOWxx/iRMXOxIJWwD0+hZCJdXRfn+jblCiec="
+    on_success: change
+    on_failure: always
+    on_pull_requests: true
