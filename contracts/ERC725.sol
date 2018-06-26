@@ -30,10 +30,10 @@ contract ERC725 {
     event Approved(uint256 indexed executionId, bool approved);
 
     // Setters
-    function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) internal returns (bool success);
+    function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) external returns (bool success);
     function approve(uint256 _id, bool _approve) public returns (bool success);
     function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId);
-    function removeKey(bytes32 _key) internal returns (bool success);
+    function removeKey(bytes32 _key) external returns (bool success);
     // Getters
     function getKey(bytes32 _key) public view returns (uint256[] purposes, uint256 keyType, bytes32 key);
     function getKeyPurposes(bytes32 _key) public view returns (uint256[] purposes);

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 import './ByteArr.sol';
 import './ERC725.sol';
@@ -14,16 +14,16 @@ contract KeyHolder is ERC725 {
     mapping (uint256 => bytes32[]) keysByPurpose;
     mapping (uint256 => Execution) executions;
 
-    function KeyHolder() public {
+    constructor() public {
         bytes32 _key = keccak256(msg.sender);
         keys[_key].key = _key;
         keys[_key].purposes = [1];
         keys[_key].keyType = 1;
         keysByPurpose[1].push(_key);
-        KeyAdded(_key, keys[_key].purposes, 1);
+        emit KeyAdded(_key, keys[_key].purposes, 1);
     }
 
-    function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) internal returns (bool success) {
+    function addKey(bytes32 _key, uint256[] _purposes, uint256 _type) external returns (bool success) {
         require(keys[_key].key != _key);
 
         keys[_key].key = _key;
@@ -34,7 +34,7 @@ contract KeyHolder is ERC725 {
             keysByPurpose[_purposes[i]].push(_key);
         }
 
-        KeyAdded(_key, _purposes, _type);
+        emit KeyAdded(_key, _purposes, _type);
         return true;
     }
 
@@ -56,14 +56,14 @@ contract KeyHolder is ERC725 {
             require(keyHasPurpose(keccak256(msg.sender), 2));
         }
 
-        Approved(_id, _approve);
+        emit Approved(_id, _approve);
 
         if (_approve == true) {
             executions[_id].approved = true;
-            success = executions[_id].to.call(executions[_id].data,0);
+            success = executions[_id].to.call.value(executions[_id].value)(executions[_id].data);
             if (success) {
                 executions[_id].executed = true;
-                Executed(_id, executions[_id].to, executions[_id].value, executions[_id].data);
+                emit Executed(_id, executions[_id].to, executions[_id].value, executions[_id].data);
                 return;
             } else {
                 return;
@@ -84,15 +84,15 @@ contract KeyHolder is ERC725 {
             approve(executionNonce, true);
         }
 
-        ExecutionRequested(executionNonce, _to, _value, _data);
+        emit ExecutionRequested(executionNonce, _to, _value, _data);
 
         executionNonce++;
         return executionNonce-1;
     }
 
-    function removeKey(bytes32 _key) internal returns (bool success) {
+    function removeKey(bytes32 _key) external returns (bool success) {
         require(keys[_key].key == _key);
-        KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
+        emit KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
 
         for (uint i = 0; i < keys[_key].purposes.length; i++) {
             uint index;
