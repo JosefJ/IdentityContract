@@ -52,6 +52,7 @@ contract KeyHolder is ERC725 {
                 require(keyHasPurpose(keccak256(msg.sender),2));
             }
         } else {
+            // TODO: add require BUG
             keyHasPurpose(keccak256(msg.sender),2);
         }
 
@@ -59,6 +60,7 @@ contract KeyHolder is ERC725 {
 
         if (_approve == true) {
             executions[_id].approved = true;
+            // TODO: No
             success = executions[_id].to.call(executions[_id].data,0);
             if (success) {
                 executions[_id].executed = true;
@@ -104,8 +106,8 @@ contract KeyHolder is ERC725 {
         return true;
     }
 
-    function getKey(bytes32 _key) public view returns(uint256[] purposes, uint256 keyType, bytes32 key){
-        return (keys[_key].purposes, keys[_key].keyType, keys[_key].key);
+    function getKey(bytes32 _key) public view returns(bool exists, uint256 keyType, bytes32 key){
+        return ((keys[_key].key == _key), keys[_key].keyType, keys[_key].key);
     }
 
     function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] _keys) {
