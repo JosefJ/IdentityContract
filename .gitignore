@@ -1,1 +1,7 @@
 .idea
+
+# vim swap files
+*.swp
+*.swo
+
+build
