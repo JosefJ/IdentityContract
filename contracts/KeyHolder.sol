@@ -1,4 +1,5 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
+
 import './ByteArr.sol';
 import './ERC725.sol';
 
@@ -36,31 +37,29 @@ contract KeyHolder is ERC725 {
         KeyAdded(_key, _purposes, _type);
         return true;
     }
-    
-    // 	"a820f50a": "addKey(bytes32,uint256[],uint256)",
-    // 	"747442d3": "approve(uint256,bool)",
-    // 	"b61d27f6": "execute(address,uint256,bytes)",
-    // 	"862642f5": "removeKey(bytes32)"
+
+    //  "a820f50a": "addKey(bytes32,uint256[],uint256)",
+    //  "747442d3": "approve(uint256,bool)",
+    //  "b61d27f6": "execute(address,uint256,bytes)",
+    //  "862642f5": "removeKey(bytes32)"
 
     function approve(uint256 _id, bool _approve) public returns (bool success) {
         address to = executions[_id].to;
         bytes4 fHash = executions[_id].data.getFuncHash();
         if (to == address(this)) {
             if (fHash == 0xa820f50a || fHash == 0x862642f5) {
-                require(keyHasPurpose(keccak256(msg.sender),1));
+                require(keyHasPurpose(keccak256(msg.sender), 1));
             } else {
-                require(keyHasPurpose(keccak256(msg.sender),2));
+                require(keyHasPurpose(keccak256(msg.sender), 2));
             }
         } else {
-            // TODO: add require BUG
-            keyHasPurpose(keccak256(msg.sender),2);
+            require(keyHasPurpose(keccak256(msg.sender), 2));
         }
 
         Approved(_id, _approve);
 
         if (_approve == true) {
             executions[_id].approved = true;
-            // TODO: No
             success = executions[_id].to.call(executions[_id].data,0);
             if (success) {
                 executions[_id].executed = true;
@@ -74,7 +73,7 @@ contract KeyHolder is ERC725 {
         }
         return true;
     }
-    
+
     function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId) {
         require(!executions[executionNonce].executed);
         executions[executionNonce].to = _to;
@@ -84,13 +83,13 @@ contract KeyHolder is ERC725 {
         if (keyHasPurpose(keccak256(msg.sender),1) || keyHasPurpose(keccak256(msg.sender),2)) {
             approve(executionNonce, true);
         }
-        
+
         ExecutionRequested(executionNonce, _to, _value, _data);
 
         executionNonce++;
         return executionNonce-1;
     }
-    
+
     function removeKey(bytes32 _key) internal returns (bool success) {
         require(keys[_key].key == _key);
         KeyRemoved(keys[_key].key, keys[_key].purposes, keys[_key].keyType);
@@ -106,18 +105,21 @@ contract KeyHolder is ERC725 {
         return true;
     }
 
-    function getKey(bytes32 _key) public view returns(bool exists, uint256 keyType, bytes32 key){
-        return ((keys[_key].key == _key), keys[_key].keyType, keys[_key].key);
+    function getKey(bytes32 _key) public view returns (uint256[] purposes, uint256 keyType, bytes32 key){
+        return (keys[_key].purposes, keys[_key].keyType, keys[_key].key);
     }
 
-    function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] _keys) {
+    function getKeyPurposes(bytes32 _key) public view returns (uint256[] purposes) {
+        return keys[_key].purposes;
+    }
+
+    function getKeysByPurpose(uint256 _purpose) public view returns (bytes32[] _keys) {
         return keysByPurpose[_purpose];
     }
 
-    function keyHasPurpose(bytes32 _key, uint256 _purpose) public view returns(bool result) {
+    function keyHasPurpose(bytes32 _key, uint256 _purpose) public view returns (bool result) {
         bool isThere;
         (,isThere) = keys[_key].purposes.indexOf(_purpose);
         return isThere;
     }
-
 }
